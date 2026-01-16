@@ -1,0 +1,314 @@
+{
+  "name": "workflow-chatbot-telegram",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "id": "telegram-trigger",
+      "name": "Telegram Trigger",
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        32,
+        0
+      ],
+      "webhookId": "f0a481d6-5d6e-45e2-bdfd-b1e907b17e37",
+      "credentials": {
+        "telegramApi": {
+          "id": "nlCYq5tvZuUWcmmq",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "queue",
+              "name": "queue",
+              "value": "={{ $json.message.text.trim().split(',')[0].trim() }},BR",
+              "type": "string"
+            },
+            {
+              "id": "chatId",
+              "name": "chatId",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "formatar-entrada",
+      "name": "Formatar Entrada",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        256,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "condition-cod",
+              "leftValue": "={{ $json.cod }}",
+              "rightValue": 200,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "validar-resposta",
+      "name": "Validar Resposta",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        688,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const cidade = $json.name;\nconst temp = Math.round($json.main.temp);\nconst descricao = $json.weather[0].description;\nconst chatId = $('Formatar Entrada').item.json.chatId;\n\n// Mensagem determinística (fallback)\nconst mensagemFallback = `🌤️ A temperatura em ${cidade} é de ${temp}°C.`;\n\nreturn {\n  json: {\n    chatId,\n    cidade,\n    temp,\n    descricao,\n    mensagemFallback,\n  }\n};"
+      },
+      "id": "code-fallback",
+      "name": "Code Fallback",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        992,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "mensagemFinal",
+              "name": "mensagemFinal",
+              "value": "={{ $json.text || $('Code Fallback').item.json.mensagemFallback }}",
+              "type": "string"
+            },
+            {
+              "id": "chatId",
+              "name": "chatId",
+              "value": "={{ $('Code Fallback').item.json.chatId }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "preparar-mensagem",
+      "name": "Preparar Mensagem Final",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1312,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chatId }}",
+        "text": "={{ $json.mensagemFinal }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "enviar-sucesso",
+      "name": "Enviar Temperatura",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1568,
+        -96
+      ],
+      "webhookId": "fb119a2c-c2b5-464a-8d88-56532d093a57",
+      "credentials": {
+        "telegramApi": {
+          "id": "nlCYq5tvZuUWcmmq",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Formatar Entrada').item.json.chatId }}",
+        "text": "❌ Cidade não encontrada. Use o formato Cidade,UF (ex.: São Paulo,SP).",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "id": "enviar-erro",
+      "name": "Enviar Erro",
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        112
+      ],
+      "webhookId": "bb230178-0d70-46fe-a4ad-f24948833bfa",
+      "credentials": {
+        "telegramApi": {
+          "id": "nlCYq5tvZuUWcmmq",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "cityName": "={{ $json.queue }}",
+        "language": "Ptbr"
+      },
+      "type": "n8n-nodes-base.openWeatherMap",
+      "typeVersion": 1,
+      "position": [
+        464,
+        0
+      ],
+      "id": "050fb6db-3cea-4048-8d9b-e1ec34d8cdb4",
+      "name": "OpenWeatherMap",
+      "credentials": {
+        "openWeatherMapApi": {
+          "id": "xgjXicGrWvJiaK2p",
+          "name": "OpenWeatherMap account"
+        }
+      }
+    }
+  ],
+  "pinData": {
+    "Telegram Trigger": [
+      {
+        "json": {
+          "update_id": 573186708,
+          "message": {
+            "message_id": 11,
+            "from": {
+              "id": 7973405781,
+              "is_bot": false,
+              "first_name": "Neuri",
+              "language_code": "pt-br"
+            },
+            "chat": {
+              "id": 7973405781,
+              "first_name": "Neuri",
+              "type": "private"
+            },
+            "date": 1768584997,
+            "text": "São Paulo, SP"
+          }
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Formatar Entrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Formatar Entrada": {
+      "main": [
+        [
+          {
+            "node": "OpenWeatherMap",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Resposta": {
+      "main": [
+        [
+          {
+            "node": "Code Fallback",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Enviar Erro",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code Fallback": {
+      "main": [
+        [
+          {
+            "node": "Preparar Mensagem Final",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Preparar Mensagem Final": {
+      "main": [
+        [
+          {
+            "node": "Enviar Temperatura",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenWeatherMap": {
+      "main": [
+        [
+          {
+            "node": "Validar Resposta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "callerPolicy": "workflowsFromSameOwner",
+    "availableInMCP": false
+  },
+  "versionId": "855074f7-df1f-4b8b-9ae1-c8bb154e7af5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "575aea661df5e12e0031574b23e9973e050ced7a906de30f1e43b156845ee1bd"
+  },
+  "id": "QV5IXHxB2lr03QAu",
+  "tags": []
+}
