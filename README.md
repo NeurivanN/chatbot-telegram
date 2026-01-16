@@ -207,4 +207,5 @@ Este projeto é disponibilizado para fins educacionais.
 
 ---
 
-**Desenvolvido com N8N + Claude Code**
+**Desenvolvido com N8N**
+
