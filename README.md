@@ -178,29 +178,6 @@ const mensagemFallback = `🌤️ A temperatura em ${cidade} é de ${temp}°C.`;
 - Verifique se a chave OpenWeather está correta na credencial
 - Chaves novas podem demorar até 2 horas para ativar
 
-## Docker Compose (Opcional)
-
-Se você usa Docker para rodar o N8N localmente:
-
-```yaml
-version: '3.8'
-services:
-  n8n:
-    image: n8nio/n8n:latest
-    ports:
-      - "5678:5678"
-    environment:
-      - N8N_BASIC_AUTH_ACTIVE=true
-      - N8N_BASIC_AUTH_USER=admin
-      - N8N_BASIC_AUTH_PASSWORD=senha_segura
-      - WEBHOOK_URL=https://seu-dominio.com/
-    volumes:
-      - n8n_data:/home/node/.n8n
-
-volumes:
-  n8n_data:
-```
-
 ## Licença
 
 Este projeto é disponibilizado para fins educacionais.
@@ -208,4 +185,5 @@ Este projeto é disponibilizado para fins educacionais.
 ---
 
 **Desenvolvido com N8N**
+
 
