@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(powershell -Command \"Invoke-WebRequest -Uri ''https://editor.managerqaia.com/api/v1/workflows'' -Headers @{''X-N8N-API-KEY''=''eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5MzU0M2YxNC03M2YwLTQ4YjktOTQ1Yy0xODAzNDgxZDFiNWMiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwiaWF0IjoxNzY4NTcxMjg5LCJleHAiOjE3NzExMjQ0MDB9.RLfU6I68h-AcsfhEtVqsbFMysVwlx7Knrjk2flyrsXo''} -Method GET | Select-Object StatusCode, StatusDescription\")",
-      "mcp__n8n-mcp__get_node",
-      "mcp__n8n-mcp__n8n_create_workflow"
-    ]
-  }
-}
